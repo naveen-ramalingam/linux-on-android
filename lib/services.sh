@@ -233,38 +233,51 @@ service_menu() {
             "${YELLOW} 2)${RESET} Stop Service" \
             "${YELLOW} 3)${RESET} Restart Service" \
             "${YELLOW} 4)${RESET} Clean Stale Locks" \
-            "${YELLOW} 5)${RESET} Back to Main Menu"
+            "${YELLOW} 5)${RESET} Back to Main Menu (or '0' / 'b')"
         echo ""
         menu_prompt
         read -r choice
         
         case "$choice" in
             1)
-                echo -ne "${CYAN}Enter service (ssh/vnc/desktop):${RESET} "
+                echo -ne "${CYAN}Enter service (ssh/vnc/desktop) [or 'b' to back]:${RESET} "
                 read -r svc
-                start_service "$svc"
+                if [[ -n "$svc" && ! "$svc" =~ ^(0|[bB]|[qQ]|back|exit)$ ]]; then
+                    start_service "$svc"
+                    echo ""
+                    read -rp "Press Enter to continue..." _
+                fi
                 ;;
             2)
-                echo -ne "${CYAN}Enter service (ssh/vnc/desktop):${RESET} "
+                echo -ne "${CYAN}Enter service (ssh/vnc/desktop) [or 'b' to back]:${RESET} "
                 read -r svc
-                stop_service "$svc"
+                if [[ -n "$svc" && ! "$svc" =~ ^(0|[bB]|[qQ]|back|exit)$ ]]; then
+                    stop_service "$svc"
+                    echo ""
+                    read -rp "Press Enter to continue..." _
+                fi
                 ;;
             3)
-                echo -ne "${CYAN}Enter service (ssh/vnc/desktop):${RESET} "
+                echo -ne "${CYAN}Enter service (ssh/vnc/desktop) [or 'b' to back]:${RESET} "
                 read -r svc
-                restart_service "$svc"
+                if [[ -n "$svc" && ! "$svc" =~ ^(0|[bB]|[qQ]|back|exit)$ ]]; then
+                    restart_service "$svc"
+                    echo ""
+                    read -rp "Press Enter to continue..." _
+                fi
                 ;;
             4)
                 clean_stale_locks
+                echo ""
+                read -rp "Press Enter to continue..." _
                 ;;
-            5)
+            5|0|[bB]|[qQ]|[bB][aA][cC][kK]|[eE][xX][iI][tT])
                 break
                 ;;
             *)
                 echo -e "${RED}Invalid option${RESET}"
+                sleep 1
                 ;;
         esac
-        echo ""
-        read -rp "Press Enter to continue..." _
     done
 }

@@ -235,9 +235,9 @@ wizard_menu() {
         draw_card "Setup Assistants" \
             "${YELLOW} 1)${RESET} First-Run Wizard (Full guided setup)" \
             "${YELLOW} 2)${RESET} Distro Setup Wizard (Hardware-matched)" \
-            "${YELLOW} 3)${RESET} Back to Main Menu"
+            "${YELLOW} 3)${RESET} Back to Main Menu (or '0' / 'b')"
         echo ""
-        read -rp "${CYAN}Select option [1-3]:${RESET} " choice
+        read -rp "${CYAN}Select option [1-3, 0/b=back]:${RESET} " choice
         
         case "$choice" in
             1)
@@ -248,7 +248,7 @@ wizard_menu() {
                 combo_distro_wizard
                 break
                 ;;
-            3)
+            3|0|[bB]|[qQ]|[bB][aA][cC][kK]|[eE][xX][iI][tT])
                 break
                 ;;
             *)

@@ -87,28 +87,30 @@ package_menu() {
             "${YELLOW} 5)${RESET} Install Custom Packages" \
             "${YELLOW} 6)${RESET} Update & Upgrade Packages" \
             "${YELLOW} 7)${RESET} Cleanup Unused Packages" \
-            "${YELLOW} 8)${RESET} Back to Main Menu"
+            "${YELLOW} 8)${RESET} Back to Main Menu (or '0' / 'b')"
         echo ""
         menu_prompt
         read -r choice
 
         case "$choice" in
-            1) list_available_stacks ;;
-            2) install_stack "$distro" "LAMP" ;;
-            3) install_stack "$distro" "LEMP" ;;
-            4) install_stack "$distro" "DEV" ;;
+            1) list_available_stacks; echo ""; read -rp "Press Enter to continue..." _ ;;
+            2) install_stack "$distro" "LAMP"; echo ""; read -rp "Press Enter to continue..." _ ;;
+            3) install_stack "$distro" "LEMP"; echo ""; read -rp "Press Enter to continue..." _ ;;
+            4) install_stack "$distro" "DEV"; echo ""; read -rp "Press Enter to continue..." _ ;;
             5)
-                echo -ne "${CYAN}Enter packages separated by space:${RESET} "
+                echo -ne "${CYAN}Enter packages separated by space [or 'b' to back]:${RESET} "
                 read -r pkgs
-                [[ -n "$pkgs" ]] && install_custom_packages "$distro" $pkgs
+                if [[ -n "$pkgs" && ! "$pkgs" =~ ^(0|[bB]|[qQ]|back|exit)$ ]]; then
+                    install_custom_packages "$distro" $pkgs
+                    echo ""
+                    read -rp "Press Enter to continue..." _
+                fi
                 ;;
-            6) update_distro_packages "$distro" ;;
-            7) cleanup_distro_packages "$distro" ;;
-            8) break ;;
-            *) echo -e "${RED}Invalid choice.${RESET}" ;;
+            6) update_distro_packages "$distro"; echo ""; read -rp "Press Enter to continue..." _ ;;
+            7) cleanup_distro_packages "$distro"; echo ""; read -rp "Press Enter to continue..." _ ;;
+            8|0|[bB]|[qQ]|[bB][aA][cC][kK]|[eE][xX][iI][tT]) break ;;
+            *) echo -e "${RED}Invalid choice.${RESET}"; sleep 1 ;;
         esac
-        echo ""
-        read -rp "${YELLOW}Press Enter to continue...${RESET}" _
     done
 }
 

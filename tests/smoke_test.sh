@@ -125,19 +125,23 @@ run_test "Wizard: Distro Setup Wizard (Cancellation flow)" bash -c "
 printf '2\n1\n1\n1\nN\n' | bash \"$MAIN_SCRIPT\" --wizard
 "
 
-run_test "Main Menu: Hardware Recommendations" bash -c "printf '5\n\n\n12\n' | bash \"$MAIN_SCRIPT\""
+run_test "Main Menu: Hardware Recommendations" bash -c "printf '5\n\n12\n' | bash \"$MAIN_SCRIPT\""
 
-run_test "Main Menu: Service Management sub-entry" bash -c "printf '4\n5\n\n12\n' | bash \"$MAIN_SCRIPT\""
+run_test "Main Menu: Service Management sub-entry" bash -c "printf '4\n5\n12\n' | bash \"$MAIN_SCRIPT\""
 
-run_test "Main Menu: Package Stacks sub-entry" bash -c "printf '6\n8\n\n12\n' | bash \"$MAIN_SCRIPT\""
+run_test "Main Menu: Package Stacks sub-entry" bash -c "printf '6\n8\n12\n' | bash \"$MAIN_SCRIPT\""
 
-run_test "Main Menu: Backup & Restore sub-entry" bash -c "printf '7\n5\n\n12\n' | bash \"$MAIN_SCRIPT\""
+run_test "Main Menu: Backup & Restore sub-entry" bash -c "printf '7\n5\n12\n' | bash \"$MAIN_SCRIPT\""
 
-run_test "Main Menu: View Logs sub-entry" bash -c "printf '8\n6\n\n12\n' | bash \"$MAIN_SCRIPT\""
+run_test "Main Menu: View Logs sub-entry" bash -c "printf '8\n6\n12\n' | bash \"$MAIN_SCRIPT\""
 
-run_test "Main Menu: System Diagnostics Doctor sub-entry" bash -c "printf '9\n\n\n12\n' | bash \"$MAIN_SCRIPT\""
+run_test "Main Menu: System Diagnostics Doctor sub-entry" bash -c "printf '9\n\n12\n' | bash \"$MAIN_SCRIPT\""
 
-run_test "Main Menu: Clean Exit (Option 12)" bash -c "printf '12\n' | bash \"$MAIN_SCRIPT\""
+run_test "Main Menu: Clean Exit with '0'" bash -c "printf '0\n' | bash \"$MAIN_SCRIPT\""
+
+run_test "Main Menu: Clean Exit with 'q'" bash -c "printf 'q\n' | bash \"$MAIN_SCRIPT\""
+
+run_test "Main Menu: Submenu quick back using 'b'" bash -c "printf '4\nb\nq\n' | bash \"$MAIN_SCRIPT\""
 
 # Summary
 echo -e "\n${CYAN}====================================================${RESET}"

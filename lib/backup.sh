@@ -146,29 +146,35 @@ backup_menu() {
             "${YELLOW} 2)${RESET} List Available Backups" \
             "${YELLOW} 3)${RESET} Restore from Backup" \
             "${YELLOW} 4)${RESET} Delete a Backup" \
-            "${YELLOW} 5)${RESET} Back to Main Menu"
+            "${YELLOW} 5)${RESET} Back to Main Menu (or '0' / 'b')"
         echo ""
         menu_prompt
         read -r choice
 
         case "$choice" in
-            1) backup_distro "$distro" ;;
-            2) list_backups ;;
+            1) backup_distro "$distro"; echo ""; read -rp "Press Enter to continue..." _ ;;
+            2) list_backups; echo ""; read -rp "Press Enter to continue..." _ ;;
             3)
-                echo -ne "${CYAN}Enter backup name to restore:${RESET} "
+                echo -ne "${CYAN}Enter backup name to restore [or 'b' to back]:${RESET} "
                 read -r bname
-                [[ -n "$bname" ]] && restore_distro "$bname"
+                if [[ -n "$bname" && ! "$bname" =~ ^(0|[bB]|[qQ]|back|exit)$ ]]; then
+                    restore_distro "$bname"
+                    echo ""
+                    read -rp "Press Enter to continue..." _
+                fi
                 ;;
             4)
-                echo -ne "${CYAN}Enter backup name to delete:${RESET} "
+                echo -ne "${CYAN}Enter backup name to delete [or 'b' to back]:${RESET} "
                 read -r bname
-                [[ -n "$bname" ]] && delete_backup "$bname"
+                if [[ -n "$bname" && ! "$bname" =~ ^(0|[bB]|[qQ]|back|exit)$ ]]; then
+                    delete_backup "$bname"
+                    echo ""
+                    read -rp "Press Enter to continue..." _
+                fi
                 ;;
-            5) break ;;
-            *) echo -e "${RED}Invalid choice.${RESET}" ;;
+            5|0|[bB]|[qQ]|[bB][aA][cC][kK]|[eE][xX][iI][tT]) break ;;
+            *) echo -e "${RED}Invalid choice.${RESET}"; sleep 1 ;;
         esac
-        echo ""
-        read -rp "${YELLOW}Press Enter to continue...${RESET}" _
     done
 }
 

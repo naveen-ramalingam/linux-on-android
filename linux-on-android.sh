@@ -155,7 +155,7 @@ main_menu() {
             "${YELLOW} 9)${RESET} System Diagnostics & Doctor" \
             "${YELLOW}10)${RESET} Uninstall Distribution" \
             "${YELLOW}11)${RESET} Uninstall ALL Distributions" \
-            "${YELLOW}12)${RESET} Exit"
+            "${YELLOW}12)${RESET} Exit (or '0' / 'q')"
         
         echo ""
         menu_prompt
@@ -163,12 +163,18 @@ main_menu() {
 
         case "$CHOICE" in
             1) wizard_menu ;;
-            2) install_linux ;;
+            2) 
+                install_linux
+                echo ""
+                read -rp "Press Enter to return to main menu..." _
+                ;;
             3) 
                 if [[ -n "$CURRENT_DISTRO" ]]; then
                     login_distro "$CURRENT_DISTRO"
                 else
                     echo -e "${RED}No distribution currently installed.${RESET}"
+                    echo ""
+                    read -rp "Press Enter to return to main menu..." _
                 fi
                 ;;
             4) service_menu ;;
@@ -178,6 +184,8 @@ main_menu() {
                     package_menu "$CURRENT_DISTRO"
                 else
                     echo -e "${RED}No distribution installed.${RESET}"
+                    echo ""
+                    read -rp "Press Enter to return to main menu..." _
                 fi
                 ;;
             7)
@@ -185,17 +193,31 @@ main_menu() {
                     backup_menu "$CURRENT_DISTRO"
                 else
                     echo -e "${RED}No distribution installed.${RESET}"
+                    echo ""
+                    read -rp "Press Enter to return to main menu..." _
                 fi
                 ;;
             8) view_logs ;;
             9) run_diagnostics ;;
-            10) uninstall_one ;;
-            11) uninstall_all ;;
-            12) echo -e "${GREEN}Goodbye!${RESET}"; exit 0 ;;
-            *) echo -e "${RED}Invalid choice.${RESET}" ;;
+            10) 
+                uninstall_one
+                echo ""
+                read -rp "Press Enter to return to main menu..." _
+                ;;
+            11) 
+                uninstall_all
+                echo ""
+                read -rp "Press Enter to return to main menu..." _
+                ;;
+            12|0|[qQ]|[eE][xX][iI][tT]) 
+                echo -e "${GREEN}Goodbye!${RESET}"
+                exit 0
+                ;;
+            *) 
+                echo -e "${RED}Invalid choice.${RESET}"
+                sleep 1
+                ;;
         esac
-        echo ""
-        read -rp "Press Enter to continue..." _
     done
 }
 
@@ -217,7 +239,11 @@ install_linux() {
     proot-distro list | head -20
     echo ""
 
-    read -rp "${CYAN}Enter distro to install [debian]:${RESET} " DISTRO
+    read -rp "${CYAN}Enter distro to install [debian] (or 'b' to cancel):${RESET} " DISTRO
+    if [[ "$DISTRO" =~ ^(0|[bB]|[qQ]|back|exit)$ ]]; then
+        echo -e "${YELLOW}Installation cancelled.${RESET}"
+        return 0
+    fi
     DISTRO="${DISTRO:-debian}"
 
     read -rp "${CYAN}Enter username to create [user]:${RESET} " USERNAME

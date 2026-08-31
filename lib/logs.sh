@@ -100,7 +100,7 @@ view_logs() {
             "${YELLOW} 3)${RESET} Search logs" \
             "${YELLOW} 4)${RESET} Export logs" \
             "${YELLOW} 5)${RESET} Clear logs" \
-            "${YELLOW} 6)${RESET} Back"
+            "${YELLOW} 6)${RESET} Back to Main Menu (or '0' / 'b')"
         echo ""
         menu_prompt
         read -r choice
@@ -115,45 +115,52 @@ view_logs() {
                 ;;
             2)
                 echo ""
-                echo -ne "${CYAN}Filter by level (DEBUG/INFO/WARN/ERROR/FATAL):${RESET} "
+                echo -ne "${CYAN}Filter by level (DEBUG/INFO/WARN/ERROR/FATAL) [or 'b' to back]:${RESET} "
                 read -r level
-                echo ""
-                draw_card "Logs matching [$level]" \
-                    "$(grep "\[${level}\]" "$LOG_FILE" 2>/dev/null | tail -n "$lines" || echo 'No matching logs')"
-                echo ""
-                read -rp "${YELLOW}Press Enter to continue...${RESET}" _
+                if [[ -n "$level" && ! "$level" =~ ^(0|[bB]|[qQ]|back|exit)$ ]]; then
+                    echo ""
+                    draw_card "Logs matching [$level]" \
+                        "$(grep "\[${level}\]" "$LOG_FILE" 2>/dev/null | tail -n "$lines" || echo 'No matching logs')"
+                    echo ""
+                    read -rp "${YELLOW}Press Enter to continue...${RESET}" _
+                fi
                 ;;
             3)
-                echo -ne "${CYAN}Enter search term:${RESET} "
+                echo -ne "${CYAN}Enter search term [or 'b' to back]:${RESET} "
                 read -r term
-                echo ""
-                draw_card "Search results for '$term'" \
-                    "$(grep -i "$term" "$LOG_FILE" 2>/dev/null | tail -n "$lines" || echo 'No matching logs')"
-                echo ""
-                read -rp "${YELLOW}Press Enter to continue...${RESET}" _
+                if [[ -n "$term" && ! "$term" =~ ^(0|[bB]|[qQ]|back|exit)$ ]]; then
+                    echo ""
+                    draw_card "Search results for '$term'" \
+                        "$(grep -i "$term" "$LOG_FILE" 2>/dev/null | tail -n "$lines" || echo 'No matching logs')"
+                    echo ""
+                    read -rp "${YELLOW}Press Enter to continue...${RESET}" _
+                fi
                 ;;
             4)
                 local export_file="${HOME}/linux-on-android-logs-$(date +%Y%m%d-%H%M%S).txt"
                 cp "$LOG_FILE" "$export_file" 2>/dev/null
-                echo "\n${GREEN}✓ Logs exported to: $export_file${RESET}"
+                echo -e "\n${GREEN}✓ Logs exported to: $export_file${RESET}"
+                echo ""
+                read -rp "${YELLOW}Press Enter to continue...${RESET}" _
                 ;;
             5)
                 echo -ne "${YELLOW}Clear all logs? (y/N):${RESET} "
                 read -r confirm
                 if [[ "$confirm" =~ ^[Yy]$ ]]; then
                     > "$LOG_FILE"
-                    echo "\n${GREEN}✓ Logs cleared${RESET}"
+                    echo -e "\n${GREEN}✓ Logs cleared${RESET}"
                 fi
+                echo ""
+                read -rp "${YELLOW}Press Enter to continue...${RESET}" _
                 ;;
-            6)
+            6|0|[bB]|[qQ]|[bB][aA][cC][kK]|[eE][xX][iI][tT])
                 break
                 ;;
             *)
                 echo -e "${RED}Invalid option${RESET}"
+                sleep 1
                 ;;
         esac
-        echo ""
-        read -rp "${YELLOW}Press Enter to continue...${RESET}" _
     done
 }
 
