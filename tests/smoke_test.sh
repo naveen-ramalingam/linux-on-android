@@ -101,6 +101,10 @@ run_test "CLI Flag: --help" bash -c "bash \"$MAIN_SCRIPT\" --help | grep -q 'Usa
 
 run_test "CLI Flag: --status" bash -c "bash \"$MAIN_SCRIPT\" --status"
 
+run_test "CLI Flag: --ip (Network & IP discovery)" bash -c "bash \"$MAIN_SCRIPT\" --ip"
+
+run_test "CLI Flag: --connect-ssh (Cancellation flow)" bash -c "printf 'b\n' | bash \"$MAIN_SCRIPT\" --connect-ssh"
+
 run_test "CLI Flag: --doctor" bash -c "printf '\n' | bash \"$MAIN_SCRIPT\" --doctor"
 
 run_test "CLI Flag: --recommend" bash -c "printf '\n' | bash \"$MAIN_SCRIPT\" --recommend"
@@ -115,7 +119,7 @@ run_test "CLI Flag: --start-vnc and --stop-vnc" bash -c "bash \"$MAIN_SCRIPT\" -
 
 run_test "CLI Flag: --start-ssh and --stop-ssh" bash -c "bash \"$MAIN_SCRIPT\" --start-ssh && bash \"$MAIN_SCRIPT\" --stop-ssh"
 
-run_test "Sub-Menu: Service Management Menu" bash -c "printf '5\n' | bash \"$MAIN_SCRIPT\" --services"
+run_test "Sub-Menu: Service Management Menu" bash -c "printf '6\n' | bash \"$MAIN_SCRIPT\" --services"
 
 run_test "Sub-Menu: Root Hub Menu" bash -c "printf '7\n' | bash \"$MAIN_SCRIPT\" --root"
 
@@ -129,21 +133,23 @@ run_test "Wizard: Distro Setup Wizard (Cancellation flow)" bash -c "
 printf '2\n1\n1\n1\nN\n' | bash \"$MAIN_SCRIPT\" --wizard
 "
 
-run_test "Main Menu: Hardware Recommendations" bash -c "printf '5\n\n0\n' | bash \"$MAIN_SCRIPT\""
+run_test "Main Menu: Service Management sub-entry" bash -c "printf '4\n6\n0\n' | bash \"$MAIN_SCRIPT\""
 
-run_test "Main Menu: Service Management sub-entry" bash -c "printf '4\n5\n0\n' | bash \"$MAIN_SCRIPT\""
+run_test "Main Menu: Network & Remote Access Hub sub-entry" bash -c "printf '5\n4\n0\n' | bash \"$MAIN_SCRIPT\""
 
-run_test "Main Menu: Package Stacks sub-entry" bash -c "printf '6\n8\n0\n' | bash \"$MAIN_SCRIPT\""
+run_test "Main Menu: Hardware Recommendations" bash -c "printf '6\n\n0\n' | bash \"$MAIN_SCRIPT\""
 
-run_test "Main Menu: Backup & Restore sub-entry" bash -c "printf '7\n5\n0\n' | bash \"$MAIN_SCRIPT\""
+run_test "Main Menu: Package Stacks sub-entry" bash -c "printf '7\n8\n0\n' | bash \"$MAIN_SCRIPT\""
 
-run_test "Main Menu: Root Hub sub-entry" bash -c "printf '8\n7\n0\n' | bash \"$MAIN_SCRIPT\""
+run_test "Main Menu: Backup & Restore sub-entry" bash -c "printf '8\n5\n0\n' | bash \"$MAIN_SCRIPT\""
 
-run_test "Main Menu: View Logs sub-entry" bash -c "printf '9\n6\n0\n' | bash \"$MAIN_SCRIPT\""
+run_test "Main Menu: Root Hub sub-entry" bash -c "printf '9\n7\n0\n' | bash \"$MAIN_SCRIPT\""
 
-run_test "Main Menu: System Diagnostics Doctor sub-entry" bash -c "printf '10\n\n0\n' | bash \"$MAIN_SCRIPT\""
+run_test "Main Menu: View Logs sub-entry" bash -c "printf '10\n6\n0\n' | bash \"$MAIN_SCRIPT\""
 
-run_test "Main Menu: Clean Exit with option '13'" bash -c "printf '13\n' | bash \"$MAIN_SCRIPT\""
+run_test "Main Menu: System Diagnostics Doctor sub-entry" bash -c "printf '11\n\n0\n' | bash \"$MAIN_SCRIPT\""
+
+run_test "Main Menu: Clean Exit with option '14'" bash -c "printf '14\n' | bash \"$MAIN_SCRIPT\""
 
 run_test "Main Menu: Clean Exit with '0'" bash -c "printf '0\n' | bash \"$MAIN_SCRIPT\""
 

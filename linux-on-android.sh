@@ -44,6 +44,8 @@ source "$LIB_PATH/packages.sh"
 source "$LIB_PATH/backup.sh"
 # shellcheck source=/dev/null
 source "$LIB_PATH/root.sh"
+# shellcheck source=/dev/null
+source "$LIB_PATH/network.sh"
 
 PREFIX="${PREFIX:-/data/data/com.termux/files/usr}"
 CONFIG_DIR="$PREFIX/etc/linux-on-android"
@@ -57,6 +59,8 @@ print_usage() {
     echo ""
     echo "Options:"
     echo "  --status               Show overall system and container status"
+    echo "  --ip, --network        Show device IP and SSH/VNC connection URLs"
+    echo "  --connect-ssh          Connect to a remote SSH server (client mode)"
     echo "  --auto-install [dist]  Non-interactively install a distribution (e.g. debian)"
     echo "  --wizard               Launch interactive First-Run / Distro Setup Wizard"
     echo "  --recommend            Show hardware-tailored recommendations"
@@ -81,6 +85,14 @@ if [[ $# -gt 0 ]]; then
             draw_status_bar "$CURRENT_DISTRO"
             show_all_services_status
             hardware_summary
+            exit 0
+            ;;
+        --ip|--network)
+            show_network_info
+            exit 0
+            ;;
+        --connect-ssh)
+            connect_to_remote_ssh
             exit 0
             ;;
         --auto-install)
@@ -166,15 +178,16 @@ main_menu() {
             "${YELLOW} 2)${RESET} Install Linux Distribution" \
             "${YELLOW} 3)${RESET} Launch / Login to Linux" \
             "${YELLOW} 4)${RESET} Service Management (SSH/VNC)" \
-            "${YELLOW} 5)${RESET} Hardware Recommendations" \
-            "${YELLOW} 6)${RESET} Package Stacks & Software" \
-            "${YELLOW} 7)${RESET} Backup & Restore Snapshots" \
-            "${YELLOW} 8)${RESET} Root Hub & Native Chroot" \
-            "${YELLOW} 9)${RESET} View Logs & Telemetry" \
-            "${YELLOW}10)${RESET} System Diagnostics & Doctor" \
-            "${YELLOW}11)${RESET} Uninstall Distribution" \
-            "${YELLOW}12)${RESET} Uninstall ALL Distributions" \
-            "${YELLOW}13)${RESET} Exit (or '0' / 'q')"
+            "${YELLOW} 5)${RESET} Network & Remote Access Hub (IP/SSH/VNC)" \
+            "${YELLOW} 6)${RESET} Hardware Recommendations" \
+            "${YELLOW} 7)${RESET} Package Stacks & Software" \
+            "${YELLOW} 8)${RESET} Backup & Restore Snapshots" \
+            "${YELLOW} 9)${RESET} Root Hub & Native Chroot" \
+            "${YELLOW}10)${RESET} View Logs & Telemetry" \
+            "${YELLOW}11)${RESET} System Diagnostics & Doctor" \
+            "${YELLOW}12)${RESET} Uninstall Distribution" \
+            "${YELLOW}13)${RESET} Uninstall ALL Distributions" \
+            "${YELLOW}14)${RESET} Exit (or '0' / 'q')"
         
         echo ""
         menu_prompt
@@ -197,8 +210,9 @@ main_menu() {
                 fi
                 ;;
             4) service_menu ;;
-            5) show_all_recommendations ;;
-            6) 
+            5) network_menu ;;
+            6) show_all_recommendations ;;
+            7) 
                 if [[ -n "$CURRENT_DISTRO" ]]; then
                     package_menu "$CURRENT_DISTRO"
                 else
@@ -207,7 +221,7 @@ main_menu() {
                     read -rp "Press Enter to return to main menu..." _
                 fi
                 ;;
-            7)
+            8)
                 if [[ -n "$CURRENT_DISTRO" ]]; then
                     backup_menu "$CURRENT_DISTRO"
                 else
@@ -216,22 +230,22 @@ main_menu() {
                     read -rp "Press Enter to return to main menu..." _
                 fi
                 ;;
-            8)
+            9)
                 root_menu "$CURRENT_DISTRO"
                 ;;
-            9) view_logs ;;
-            10) run_diagnostics ;;
-            11) 
+            10) view_logs ;;
+            11) run_diagnostics ;;
+            12) 
                 uninstall_one
                 echo ""
                 read -rp "Press Enter to return to main menu..." _
                 ;;
-            12) 
+            13) 
                 uninstall_all
                 echo ""
                 read -rp "Press Enter to return to main menu..." _
                 ;;
-            13|0|[qQ]|[eE][xX][iI][tT]) 
+            14|0|[qQ]|[eE][xX][iI][tT]) 
                 echo -e "${GREEN}Goodbye!${RESET}"
                 exit 0
                 ;;

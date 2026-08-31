@@ -54,11 +54,14 @@ draw_status_bar() {
     local rtype
     rtype=$(get_root_type 2>/dev/null || echo "No")
     
+    local lip
+    lip=$(get_local_ip 2>/dev/null || echo "127.0.0.1")
+    
     echo -e "${CYAN}${BOX_TL}$(printf "${BOX_H}%.0s" $(seq 1 $((width - 2))))${BOX_TR}${RESET}"
     if [[ -n "$distro" ]]; then
-        printf "${CYAN}${BOX_V}${RESET} Distro: ${GREEN}%-8s${RESET} Root: ${YELLOW}%-9s${RESET} Storage: %-12s ${CYAN}${BOX_V}${RESET}\n" "$distro" "$rtype" "$(get_storage_free 2>/dev/null || echo 'N/A')"
+        printf "${CYAN}${BOX_V}${RESET} Distro: ${GREEN}%-8s${RESET} IP: ${CYAN}%-15s${RESET} Root: ${YELLOW}%-7s${RESET} ${CYAN}${BOX_V}${RESET}\n" "$distro" "$lip" "$rtype"
     else
-        printf "${CYAN}${BOX_V}${RESET} Distro: ${RED}%-8s${RESET} Root: ${YELLOW}%-9s${RESET} Storage: %-12s ${CYAN}${BOX_V}${RESET}\n" "None" "$rtype" "$(get_storage_free 2>/dev/null || echo 'N/A')"
+        printf "${CYAN}${BOX_V}${RESET} Distro: ${RED}%-8s${RESET} IP: ${CYAN}%-15s${RESET} Root: ${YELLOW}%-7s${RESET} ${CYAN}${BOX_V}${RESET}\n" "None" "$lip" "$rtype"
     fi
     echo -e "${CYAN}${BOX_BL}$(printf "${BOX_H}%.0s" $(seq 1 $((width - 2))))${BOX_BR}${RESET}"
 }

@@ -233,7 +233,8 @@ service_menu() {
             "${YELLOW} 2)${RESET} Stop Service" \
             "${YELLOW} 3)${RESET} Restart Service" \
             "${YELLOW} 4)${RESET} Clean Stale Locks" \
-            "${YELLOW} 5)${RESET} Back to Main Menu (or '0' / 'b')"
+            "${YELLOW} 5)${RESET} View Remote Connection URLs (SSH & VNC)" \
+            "${YELLOW} 6)${RESET} Back to Main Menu (or '0' / 'b')"
         echo ""
         menu_prompt
         read -r choice
@@ -271,7 +272,12 @@ service_menu() {
                 echo ""
                 read -rp "Press Enter to continue..." _
                 ;;
-            5|0|[bB]|[qQ]|[bB][aA][cC][kK]|[eE][xX][iI][tT])
+            5)
+                show_remote_access_card
+                echo ""
+                read -rp "Press Enter to continue..." _
+                ;;
+            6|0|[bB]|[qQ]|[bB][aA][cC][kK]|[eE][xX][iI][tT])
                 break
                 ;;
             *)

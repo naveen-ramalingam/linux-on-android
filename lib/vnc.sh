@@ -7,6 +7,14 @@ start_vnc() {
     local distro="$1"
     echo -e "${BLUE}Starting VNC server...${RESET}"
     proot-distro login "$distro" -- bash -c 'export DISPLAY=:1 && vncserver :1 -geometry 1280x720 -depth 24 2>&1'
+    
+    local ip
+    ip=$(get_local_ip 2>/dev/null || echo "127.0.0.1")
+    echo ""
+    draw_card "VNC Server Started" \
+        "${CYAN}VNC Viewer Address:${RESET} ${GREEN}${ip}:5901${RESET} (or ${GREEN}${ip}:1${RESET})" \
+        "${CYAN}Connect from:${RESET}       bVNC / RealVNC / AVNC / TigerVNC" \
+        "${CYAN}Display:${RESET}            :1 (Port 5901)"
 }
 
 stop_vnc() {

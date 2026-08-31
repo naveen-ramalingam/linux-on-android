@@ -48,8 +48,14 @@ Check out the **[Manual Installation Guide](docs/MANUAL-INSTALL.md)**.
 - User management with automated passwordless `sudo` configuration
 - Clean uninstallation (single distro or full wipe)
 
+### 🌐 Network & Remote Access Hub
+- **Auto-Detect IP Address**: Instant lookup of local Wi-Fi, hotspot, cellular, and VPN/Tailscale/WireGuard IPs
+- **SSH & VNC Direct Connection Strings**: Formats ready-to-use commands (`ssh user@<IP> -p 2222`) and VNC addresses (`<IP>:5901`) with configured passwords
+- **SSH Client Mode**: Connect directly to remote servers, Raspberry Pis, or PCs by entering their IP from within the manager
+- **Real-Time Status Bar**: Your device's active IP address is always visible on the top status bar
+
 ### 🖥️ Remote Display & Access
-- Automated LXDE desktop + TightVNC configuration
+- Automated LXDE desktop + TightVNC configuration with instant connection card
 - Auto-cleanup of stale VNC locks (`X1-lock`)
 - SSH server management (start, stop, status monitoring)
 - Network IP detection for easy LAN connections
