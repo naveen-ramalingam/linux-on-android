@@ -46,6 +46,8 @@ source "$LIB_PATH/backup.sh"
 source "$LIB_PATH/root.sh"
 # shellcheck source=/dev/null
 source "$LIB_PATH/network.sh"
+# shellcheck source=/dev/null
+source "$LIB_PATH/docker.sh"
 
 PREFIX="${PREFIX:-/data/data/com.termux/files/usr}"
 CONFIG_DIR="$PREFIX/etc/linux-on-android"
@@ -61,6 +63,9 @@ print_usage() {
     echo "  --status               Show overall system and container status"
     echo "  --ip, --network        Show device IP and SSH/VNC connection URLs"
     echo "  --connect-ssh          Connect to a remote SSH server (client mode)"
+    echo "  --docker               Open Native Rooted Docker Hub"
+    echo "  --start-docker         Start dockerd daemon"
+    echo "  --stop-docker          Stop dockerd daemon"
     echo "  --auto-install [dist]  Non-interactively install a distribution (e.g. debian)"
     echo "  --wizard               Launch interactive First-Run / Distro Setup Wizard"
     echo "  --recommend            Show hardware-tailored recommendations"
@@ -93,6 +98,18 @@ if [[ $# -gt 0 ]]; then
             ;;
         --connect-ssh)
             connect_to_remote_ssh
+            exit 0
+            ;;
+        --docker)
+            docker_menu
+            exit 0
+            ;;
+        --start-docker)
+            start_dockerd
+            exit 0
+            ;;
+        --stop-docker)
+            stop_dockerd
             exit 0
             ;;
         --auto-install)
@@ -183,11 +200,12 @@ main_menu() {
             "${YELLOW} 7)${RESET} Package Stacks & Software" \
             "${YELLOW} 8)${RESET} Backup & Restore Snapshots" \
             "${YELLOW} 9)${RESET} Root Hub & Native Chroot" \
-            "${YELLOW}10)${RESET} View Logs & Telemetry" \
-            "${YELLOW}11)${RESET} System Diagnostics & Doctor" \
-            "${YELLOW}12)${RESET} Uninstall Distribution" \
-            "${YELLOW}13)${RESET} Uninstall ALL Distributions" \
-            "${YELLOW}14)${RESET} Exit (or '0' / 'q')"
+            "${YELLOW}10)${RESET} Rooted Docker Engine (dockerd)" \
+            "${YELLOW}11)${RESET} View Logs & Telemetry" \
+            "${YELLOW}12)${RESET} System Diagnostics & Doctor" \
+            "${YELLOW}13)${RESET} Uninstall Distribution" \
+            "${YELLOW}14)${RESET} Uninstall ALL Distributions" \
+            "${YELLOW}15)${RESET} Exit (or '0' / 'q')"
         
         echo ""
         menu_prompt
@@ -233,19 +251,22 @@ main_menu() {
             9)
                 root_menu "$CURRENT_DISTRO"
                 ;;
-            10) view_logs ;;
-            11) run_diagnostics ;;
-            12) 
+            10)
+                docker_menu
+                ;;
+            11) view_logs ;;
+            12) run_diagnostics ;;
+            13) 
                 uninstall_one
                 echo ""
                 read -rp "Press Enter to return to main menu..." _
                 ;;
-            13) 
+            14) 
                 uninstall_all
                 echo ""
                 read -rp "Press Enter to return to main menu..." _
                 ;;
-            14|0|[qQ]|[eE][xX][iI][tT]) 
+            15|0|[qQ]|[eE][xX][iI][tT]) 
                 echo -e "${GREEN}Goodbye!${RESET}"
                 exit 0
                 ;;

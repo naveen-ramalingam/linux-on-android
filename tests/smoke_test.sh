@@ -111,7 +111,9 @@ run_test "CLI Flag: --recommend" bash -c "printf '\n' | bash \"$MAIN_SCRIPT\" --
 
 run_test "CLI Flag: --logs" bash -c "printf '6\n' | bash \"$MAIN_SCRIPT\" --logs"
 
-run_test "CLI Flag: --root" bash -c "printf '7\n' | bash \"$MAIN_SCRIPT\" --root"
+run_test "CLI Flag: --root" bash -c "printf '8\n' | bash \"$MAIN_SCRIPT\" --root"
+
+run_test "CLI Flag: --docker" bash -c "printf '8\n' | bash \"$MAIN_SCRIPT\" --docker"
 
 run_test "CLI Flag: --auto-install (Direct CLI install)" bash -c "bash \"$MAIN_SCRIPT\" --auto-install alpine"
 
@@ -121,7 +123,9 @@ run_test "CLI Flag: --start-ssh and --stop-ssh" bash -c "bash \"$MAIN_SCRIPT\" -
 
 run_test "Sub-Menu: Service Management Menu" bash -c "printf '6\n' | bash \"$MAIN_SCRIPT\" --services"
 
-run_test "Sub-Menu: Root Hub Menu" bash -c "printf '7\n' | bash \"$MAIN_SCRIPT\" --root"
+run_test "Sub-Menu: Root Hub Menu" bash -c "printf '8\n' | bash \"$MAIN_SCRIPT\" --root"
+
+run_test "Sub-Menu: Docker Hub Menu" bash -c "printf '8\n' | bash \"$MAIN_SCRIPT\" --docker"
 
 run_test "Sub-Menu: Wizard Menu (Exit to main)" bash -c "printf '3\n' | bash \"$MAIN_SCRIPT\" --wizard"
 
@@ -143,13 +147,15 @@ run_test "Main Menu: Package Stacks sub-entry" bash -c "printf '7\n8\n0\n' | bas
 
 run_test "Main Menu: Backup & Restore sub-entry" bash -c "printf '8\n5\n0\n' | bash \"$MAIN_SCRIPT\""
 
-run_test "Main Menu: Root Hub sub-entry" bash -c "printf '9\n7\n0\n' | bash \"$MAIN_SCRIPT\""
+run_test "Main Menu: Root Hub sub-entry" bash -c "printf '9\n8\n0\n' | bash \"$MAIN_SCRIPT\""
 
-run_test "Main Menu: View Logs sub-entry" bash -c "printf '10\n6\n0\n' | bash \"$MAIN_SCRIPT\""
+run_test "Main Menu: Docker Hub sub-entry" bash -c "printf '10\n8\n0\n' | bash \"$MAIN_SCRIPT\""
 
-run_test "Main Menu: System Diagnostics Doctor sub-entry" bash -c "printf '11\n\n0\n' | bash \"$MAIN_SCRIPT\""
+run_test "Main Menu: View Logs sub-entry" bash -c "printf '11\n6\n0\n' | bash \"$MAIN_SCRIPT\""
 
-run_test "Main Menu: Clean Exit with option '14'" bash -c "printf '14\n' | bash \"$MAIN_SCRIPT\""
+run_test "Main Menu: System Diagnostics Doctor sub-entry" bash -c "printf '12\n\n0\n' | bash \"$MAIN_SCRIPT\""
+
+run_test "Main Menu: Clean Exit with option '15'" bash -c "printf '15\n' | bash \"$MAIN_SCRIPT\""
 
 run_test "Main Menu: Clean Exit with '0'" bash -c "printf '0\n' | bash \"$MAIN_SCRIPT\""
 

@@ -268,8 +268,9 @@ root_menu() {
             "${YELLOW} 3)${RESET} SELinux Switcher (Permissive/Enforcing)" \
             "${YELLOW} 4)${RESET} Low Port Redirection (Port 80/443/22 iptables)" \
             "${YELLOW} 5)${RESET} Enable Swap File (RAM Booster)" \
-            "${YELLOW} 6)${RESET} Clean / Unmount Chroot Mounts" \
-            "${YELLOW} 7)${RESET} Back to Main Menu (or '0' / 'b')"
+            "${YELLOW} 6)${RESET} Native Docker Engine (dockerd & Containers)" \
+            "${YELLOW} 7)${RESET} Clean / Unmount Chroot Mounts" \
+            "${YELLOW} 8)${RESET} Back to Main Menu (or '0' / 'b')"
         echo ""
         menu_prompt
         read -r choice
@@ -305,13 +306,18 @@ root_menu() {
                 read -rp "${YELLOW}Press Enter to continue...${RESET}" _
                 ;;
             6)
+                if declare -f docker_menu >/dev/null; then
+                    docker_menu
+                fi
+                ;;
+            7)
                 if [[ -n "$distro" ]]; then
                     chroot_unmount "$distro"
                 fi
                 echo ""
                 read -rp "${YELLOW}Press Enter to continue...${RESET}" _
                 ;;
-            7|0|[bB]|[qQ]|[bB][aA][cC][kK]|[eE][xX][iI][tT])
+            8|0|[bB]|[qQ]|[bB][aA][cC][kK]|[eE][xX][iI][tT])
                 break
                 ;;
             *)

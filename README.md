@@ -28,7 +28,8 @@ Check out the **[Manual Installation Guide](docs/MANUAL-INSTALL.md)**.
 
 ### ⚡ Root Hub & Native Chroot (For Rooted Devices)
 - **Bare-Metal Chroot Shell**: 100% native Linux kernel speed (zero ptrace/PRoot emulation overhead)
-- **Hardware & Kernel Diagnostics**: Detects KernelSU, Magisk, APatch, `/dev/net/tun` (VPN/WireGuard), `/dev/kvm` (Hardware Virtualization), and Adreno/Mali GPU nodes (`/dev/kgsl-3d0`)
+- **🐳 Native Rooted Docker Engine**: Automated `dockerd` management, `/sys/fs/cgroup` mounting, and container runner (Nginx, Alpine, etc.)
+- **Hardware & Kernel Diagnostics**: Kernel Docker audit, detects KernelSU, Magisk, APatch, `/dev/net/tun` (VPN/WireGuard), `/dev/kvm` (Hardware Virtualization), and Adreno/Mali GPU nodes (`/dev/kgsl-3d0`)
 - **SELinux Switcher**: Toggle between Permissive and Enforcing modes
 - **Privileged Port Forwarding**: Redirect standard ports (`80` -> `8080`, `443` -> `8443`, `22` -> `2222`) using root `iptables`
 - **Device Swap / RAM Booster**: Allocate and activate Linux swap files to prevent OOM kills during heavy builds
