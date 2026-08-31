@@ -42,6 +42,8 @@ source "$LIB_PATH/recommendations.sh"
 source "$LIB_PATH/packages.sh"
 # shellcheck source=/dev/null
 source "$LIB_PATH/backup.sh"
+# shellcheck source=/dev/null
+source "$LIB_PATH/root.sh"
 
 PREFIX="${PREFIX:-/data/data/com.termux/files/usr}"
 CONFIG_DIR="$PREFIX/etc/linux-on-android"
@@ -61,6 +63,8 @@ print_usage() {
     echo "  --services             Manage background services (SSH, VNC, etc.)"
     echo "  --logs                 Open unified log viewer"
     echo "  --doctor               Run comprehensive system diagnostics"
+    echo "  --root                 Open Root Hub & Native Chroot Manager"
+    echo "  --chroot [dist]        Direct native chroot login without PRoot overhead"
     echo "  --start-vnc            Start VNC server for installed distribution"
     echo "  --stop-vnc             Stop VNC server for installed distribution"
     echo "  --start-ssh            Start SSH server for installed distribution"
@@ -103,6 +107,20 @@ if [[ $# -gt 0 ]]; then
             ;;
         --doctor)
             run_diagnostics
+            exit 0
+            ;;
+        --root)
+            CURRENT_DISTRO=$(get_installed_distro)
+            root_menu "$CURRENT_DISTRO"
+            exit 0
+            ;;
+        --chroot)
+            DISTRO="${2:-$(get_installed_distro)}"
+            if [[ -n "$DISTRO" ]]; then
+                chroot_login "$DISTRO"
+            else
+                echo "No distribution installed."
+            fi
             exit 0
             ;;
         --start-vnc)
@@ -151,11 +169,12 @@ main_menu() {
             "${YELLOW} 5)${RESET} Hardware Recommendations" \
             "${YELLOW} 6)${RESET} Package Stacks & Software" \
             "${YELLOW} 7)${RESET} Backup & Restore Snapshots" \
-            "${YELLOW} 8)${RESET} View Logs & Telemetry" \
-            "${YELLOW} 9)${RESET} System Diagnostics & Doctor" \
-            "${YELLOW}10)${RESET} Uninstall Distribution" \
-            "${YELLOW}11)${RESET} Uninstall ALL Distributions" \
-            "${YELLOW}12)${RESET} Exit (or '0' / 'q')"
+            "${YELLOW} 8)${RESET} Root Hub & Native Chroot" \
+            "${YELLOW} 9)${RESET} View Logs & Telemetry" \
+            "${YELLOW}10)${RESET} System Diagnostics & Doctor" \
+            "${YELLOW}11)${RESET} Uninstall Distribution" \
+            "${YELLOW}12)${RESET} Uninstall ALL Distributions" \
+            "${YELLOW}13)${RESET} Exit (or '0' / 'q')"
         
         echo ""
         menu_prompt
@@ -197,19 +216,22 @@ main_menu() {
                     read -rp "Press Enter to return to main menu..." _
                 fi
                 ;;
-            8) view_logs ;;
-            9) run_diagnostics ;;
-            10) 
+            8)
+                root_menu "$CURRENT_DISTRO"
+                ;;
+            9) view_logs ;;
+            10) run_diagnostics ;;
+            11) 
                 uninstall_one
                 echo ""
                 read -rp "Press Enter to return to main menu..." _
                 ;;
-            11) 
+            12) 
                 uninstall_all
                 echo ""
                 read -rp "Press Enter to return to main menu..." _
                 ;;
-            12|0|[qQ]|[eE][xX][iI][tT]) 
+            13|0|[qQ]|[eE][xX][iI][tT]) 
                 echo -e "${GREEN}Goodbye!${RESET}"
                 exit 0
                 ;;

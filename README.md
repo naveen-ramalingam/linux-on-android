@@ -2,17 +2,18 @@
 
 ![Android](https://img.shields.io/badge/Platform-Android-3DDC84?logo=android&logoColor=white)
 ![Linux](https://img.shields.io/badge/Userspace-GNU%2FLinux-FCC624?logo=linux&logoColor=black)
-![No Root](https://img.shields.io/badge/Privilege-No%20Root%20Required-success)
+![No Root](https://img.shields.io/badge/Privilege-Rootless%20%2B%20Root%20Supported-success)
 ![Shell](https://img.shields.io/badge/Shell-Bash-4EAA25?logo=gnu-bash&logoColor=white)
 
 ---
 
 ## 🚀 Overview
 
-**Linux Server Manager for Android** is a modular, mobile-optimized management suite that installs, configures, and manages Linux distributions inside **Termux** using **proot-distro**, completely rootless.
+**Linux Server Manager for Android** is a modular, mobile-optimized management suite that installs, configures, and manages Linux distributions inside **Termux** using **proot-distro** (Rootless) and **Native Chroot** (Rooted).
 
 Transform any Android phone or tablet into:
 - 🌐 **Self-hosted Server**: Run web servers, databases, and APIs
+- ⚡ **Rooted Bare-Metal Chroot**: 100% native kernel execution without PRoot overhead for rooted users (KernelSU, Magisk, APatch)
 - 💻 **Development Machine**: Full development stack with Python, Node.js, C/C++, Rust, Go
 - 🖥️ **Desktop Environment**: Lightweight LXDE desktop via VNC
 - 🔒 **Secure Remote Access**: SSH server and VNC with port management
@@ -25,9 +26,16 @@ Check out the **[Manual Installation Guide](docs/MANUAL-INSTALL.md)**.
 
 ## ✨ Key Features
 
+### ⚡ Root Hub & Native Chroot (For Rooted Devices)
+- **Bare-Metal Chroot Shell**: 100% native Linux kernel speed (zero ptrace/PRoot emulation overhead)
+- **Hardware & Kernel Diagnostics**: Detects KernelSU, Magisk, APatch, `/dev/net/tun` (VPN/WireGuard), `/dev/kvm` (Hardware Virtualization), and Adreno/Mali GPU nodes (`/dev/kgsl-3d0`)
+- **SELinux Switcher**: Toggle between Permissive and Enforcing modes
+- **Privileged Port Forwarding**: Redirect standard ports (`80` -> `8080`, `443` -> `8443`, `22` -> `2222`) using root `iptables`
+- **Device Swap / RAM Booster**: Allocate and activate Linux swap files to prevent OOM kills during heavy builds
+
 ### 📱 Mobile-Optimized TUI
-- Responsive status bar showing active distro, IP address, battery, storage, and RAM
-- Big, touch-friendly numbered menus
+- Responsive status bar showing active distro, root status, IP address, battery, storage, and RAM
+- Big, touch-friendly numbered menus with universal quick back/exit shortcuts (`0`, `b`, `q`)
 - Graceful color fallback for non-color terminals
 - Designed specifically for portrait mode and on-screen keyboards
 

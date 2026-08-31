@@ -51,11 +51,14 @@ draw_status_bar() {
     width=$(get_term_width)
     local inner_width=$((width - 4))
     
+    local rtype
+    rtype=$(get_root_type 2>/dev/null || echo "No")
+    
     echo -e "${CYAN}${BOX_TL}$(printf "${BOX_H}%.0s" $(seq 1 $((width - 2))))${BOX_TR}${RESET}"
     if [[ -n "$distro" ]]; then
-        printf "${CYAN}${BOX_V}${RESET} Distro: ${GREEN}%-10s${RESET} Storage: %-${inner_width}s ${CYAN}${BOX_V}${RESET}\n" "$distro" "$(get_storage_free 2>/dev/null || echo 'N/A')"
+        printf "${CYAN}${BOX_V}${RESET} Distro: ${GREEN}%-8s${RESET} Root: ${YELLOW}%-9s${RESET} Storage: %-12s ${CYAN}${BOX_V}${RESET}\n" "$distro" "$rtype" "$(get_storage_free 2>/dev/null || echo 'N/A')"
     else
-        printf "${CYAN}${BOX_V}${RESET} Distro: ${RED}%-10s${RESET} Storage: %-${inner_width}s ${CYAN}${BOX_V}${RESET}\n" "None" "$(get_storage_free 2>/dev/null || echo 'N/A')"
+        printf "${CYAN}${BOX_V}${RESET} Distro: ${RED}%-8s${RESET} Root: ${YELLOW}%-9s${RESET} Storage: %-12s ${CYAN}${BOX_V}${RESET}\n" "None" "$rtype" "$(get_storage_free 2>/dev/null || echo 'N/A')"
     fi
     echo -e "${CYAN}${BOX_BL}$(printf "${BOX_H}%.0s" $(seq 1 $((width - 2))))${BOX_BR}${RESET}"
 }
