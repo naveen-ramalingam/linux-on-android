@@ -1,0 +1,74 @@
+#!/bin/bash
+# Package management helpers for Linux Server Manager
+
+# Common package stacks for quick installation
+declare -A STACKS
+
+STACKS[LAMP]="apache2 mariadb-server php php-mysql"
+STACKS[LEMP]="nginx mariadb-server php-fpm php-mysql"
+STACKS[DEV]="build-essential git curl wget vim tmux python3 python3-pip nodejs npm"
+STACKS[MEDIA]="ffmpeg imagemagick vlc-bin"
+STACKS[DATA]="postgresql postgresql-contrib redis-server sqlite3"
+
+list_available_stacks() {
+    echo -e "${CYAN}Available software stacks:${RESET}"
+    for stack in "${!STACKS[@]}"; do
+        echo -e "${YELLOW}$stack:${RESET} ${STACKS[$stack]}"
+    done
+}
+
+install_stack() {
+    local distro="$1"
+    local stack_name="$2"
+    
+    if [[ -z "${STACKS[$stack_name]}" ]]; then
+        echo -e "${RED}Unknown stack: $stack_name${RESET}"
+        return 1
+    fi
+    
+    local packages="${STACKS[$stack_name]}"
+    echo -e "${BLUE}Installing $stack_name stack on $distro...${RESET}"
+    echo -e "${CYAN}Packages:${RESET} $packages"
+    
+    proot-distro login "$distro" -- bash -lc "
+        apt update
+        apt install -y $packages
+    "
+    
+    echo -e "${GREEN}Stack $stack_name installed successfully!${RESET}"
+}
+
+install_custom_packages() {
+    local distro="$1"
+    shift
+    local packages="$*"
+    
+    if [[ -z "$packages" ]]; then
+        echo -e "${RED}No packages specified.${RESET}"
+        return 1
+    fi
+    
+    echo -e "${BLUE}Installing packages on $distro: $packages${RESET}"
+    proot-distro login "$distro" -- bash -lc "
+        apt update
+        apt install -y $packages
+    "
+}
+
+update_distro_packages() {
+    local distro="$1"
+    echo -e "${BLUE}Updating packages in $distro...${RESET}"
+    proot-distro login "$distro" -- bash -lc "
+        apt update && apt upgrade -y
+    "
+    echo -e "${GREEN}Packages updated.${RESET}"
+}
+
+cleanup_distro_packages() {
+    local distro="$1"
+    echo -e "${BLUE}Cleaning up unused packages in $distro...${RESET}"
+    proot-distro login "$distro" -- bash -lc "
+        apt autoremove -y && apt clean
+    "
+    echo -e "${GREEN}Cleanup complete.${RESET}"
+}

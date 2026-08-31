@@ -1,74 +1,75 @@
-# Linux on Android
+# Linux Server Manager for Android
 
 ![Android](https://img.shields.io/badge/Platform-Android-3DDC84?logo=android&logoColor=white)
 ![Linux](https://img.shields.io/badge/Userspace-GNU%2FLinux-FCC624?logo=linux&logoColor=black)
 ![No Root](https://img.shields.io/badge/Privilege-No%20Root%20Required-success)
+![Shell](https://img.shields.io/badge/Shell-Bash-4EAA25?logo=gnu-bash&logoColor=white)
 
 ---
 
 ## 🚀 Overview
 
-**Linux on Android** is a fully automated script that installs, configures, and manages full Linux distributions inside **Termux** using **proot-distro**, all without requiring root access.
+**Linux Server Manager for Android** is a modular, mobile-optimized management suite that installs, configures, and manages Linux distributions inside **Termux** using **proot-distro**, completely rootless.
 
-This tool makes Linux‑on‑Android setups:
-
-- **Reproducible**  
-- **Beginner‑friendly**  
-- **Frictionless**  
-- **Safe**  
-- **Perfect for repurposing old devices**
-
-Use it to turn any Android phone or tablet into:
-
-- A lightweight Linux server  
-- A portable development machine  
-- A learning environment  
-- An automation node  
-- A personal experimentation sandbox  
-
-No aliases. No manual steps. No guesswork.
+Transform any Android phone or tablet into:
+- 🌐 **Self-hosted Server**: Run web servers, databases, and APIs
+- 💻 **Development Machine**: Full development stack with Python, Node.js, C/C++, Rust, Go
+- 🖥️ **Desktop Environment**: Lightweight LXDE desktop via VNC
+- 🔒 **Secure Remote Access**: SSH server and VNC with port management
+- 📱 **Mobile-First Experience**: Clean, responsive TUI designed for small touchscreens
 
 👉 **Prefer manual installation?**  
 Check out the **[Manual Installation Guide](docs/MANUAL-INSTALL.md)**.
 
 ---
 
-## ✨ Features
+## ✨ Key Features
 
-### ✔ Fully automated installation  
-No interactive prompts inside the distro, everything is handled cleanly.
+### 📱 Mobile-Optimized TUI
+- Responsive status bar showing active distro, IP address, battery, storage, and RAM
+- Big, touch-friendly numbered menus
+- Graceful color fallback for non-color terminals
+- Designed specifically for portrait mode and on-screen keyboards
 
-### ✔ Optional LXDE desktop + VNC  
-Install a GUI with one choice.  
-VNC is configured automatically with a working `xstartup`.
+### 🏗️ Modular Architecture
+- Clean library structure under `lib/` for easy extension
+- Independent modules for system detection, networking, distro management, VNC, SSH, backups, and packages
 
-### ✔ Automatic VNC lock cleanup  
-Fixes the common `Cannot start VNC:1` issue by removing stale lock files.
+### 🐧 Distribution Management
+- One-click install of Debian, Ubuntu, Alpine, Arch, Fedora, and more via `proot-distro`
+- User management with automated passwordless `sudo` configuration
+- Clean uninstallation (single distro or full wipe)
 
-### ✔ Safe sudo setup  
-Creates a non‑root user with passwordless sudo via `/etc/sudoers.d`.
+### 🖥️ Remote Display & Access
+- Automated LXDE desktop + TightVNC configuration
+- Auto-cleanup of stale VNC locks (`X1-lock`)
+- SSH server management (start, stop, status monitoring)
+- Network IP detection for easy LAN connections
 
-### ✔ Clean uninstall  
-Remove one distro or wipe all distros + configs.
+### 💾 Backup & Restore
+- Full rootfs backup to `.tar.gz` with configuration preservation
+- Simple one-command restore
 
-### ✔ No aliases  
-You control how you start/stop VNC and how you log in.
+### 🔧 System Diagnostics
+- Environment checks (Termux prefix, proot-distro version, architecture)
+- Resource monitoring (storage, battery, memory)
+- Network interface and port inspection
 
 ---
 
 ## 📦 Requirements
 
-- Android **8.0+**  
-- **Termux** (F‑Droid recommended)  
-- **4–6 GB** free storage  
-- Internet connection  
-- Optional: VNC viewer (RealVNC, bVNC, etc.)
+- Android **8.0+**
+- **Termux** ([F-Droid](https://f-droid.org/packages/com.termux/) recommended)
+- **4–6 GB** free storage
+- Active network connection
+- Optional: VNC viewer ([bVNC](https://f-droid.org/packages/com.iiordanov.freebVNC/) or RealVNC)
 
 ---
 
-## 🛠 Installation
+## 🛠 Quick Start
 
-1. Install **Termux** from F‑Droid:  
+1. Install **Termux** from F-Droid:  
    https://f-droid.org/packages/com.termux/
 
 2. Update Termux and install Git:
@@ -91,13 +92,35 @@ You control how you start/stop VNC and how you log in.
    chmod +x linux-on-android.sh
    ```
 
-5. Run the script:
+5. Run the manager:
 
    ```bash
    ./linux-on-android.sh
    ```
 
-6. Follow the on‑screen prompts.
+---
+
+## 📂 Project Structure
+
+```
+Linux-on-Android/
+├── linux-on-android.sh    # Main interactive entry point
+├── lib/                   # Modular libraries
+│   ├── colors.sh          # Terminal styling and color detection
+│   ├── system.sh          # System info (CPU, RAM, battery, storage)
+│   ├── network.sh         # Network interfaces and IP detection
+│   ├── distro.sh          # proot-distro management
+│   ├── users.sh           # User and sudo provisioning
+│   ├── ssh.sh             # OpenSSH server manager
+│   ├── vnc.sh             # LXDE / TightVNC manager
+│   ├── ui.sh              # Mobile-first headers and status bars
+│   ├── diagnostics.sh     # Health check and environment audit
+│   ├── backup.sh          # Rootfs backup and restore
+│   └── packages.sh        # Quick package stack installers
+├── docs/
+│   └── MANUAL-INSTALL.md  # Step-by-step manual setup guide
+└── LICENSE                # MIT License
+```
 
 ---
 
