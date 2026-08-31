@@ -55,7 +55,7 @@ first_run_wizard() {
     read -r desktop_choice
     
     local desktop
-    case "$distro_choice" in
+    case "$desktop_choice" in
         1) desktop="lxde" ;;
         2) desktop="xfce" ;;
         3) desktop="gnome" ;;
