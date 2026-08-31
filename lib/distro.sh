@@ -3,7 +3,26 @@
 
 source "$LIB_PATH/colors.sh"
 
+ensure_proot_distro() {
+    if ! command -v proot-distro &>/dev/null; then
+        echo -e "${BLUE}proot-distro is not installed. Installing it now...${RESET}"
+        if command -v pkg &>/dev/null; then
+            pkg update -y && pkg install -y proot-distro
+        elif command -v apt &>/dev/null; then
+            apt update -y && apt install -y proot-distro
+        fi
+        
+        if ! command -v proot-distro &>/dev/null; then
+            echo -e "${RED}Failed to install proot-distro. Please run 'pkg install proot-distro' manually.${RESET}"
+            return 1
+        fi
+        echo -e "${GREEN}✓ proot-distro installed successfully.${RESET}"
+    fi
+    return 0
+}
+
 list_distros() {
+    ensure_proot_distro || return 1
     proot-distro list 2>/dev/null || echo "Error: proot-distro not available"
 }
 
@@ -17,6 +36,7 @@ get_installed_distro() {
 
 install_distro() {
     local distro="${1:-ubuntu}"
+    ensure_proot_distro || return 1
     if is_distro_installed "$distro"; then
         echo -e "${YELLOW}Distribution '$distro' is already installed${RESET}"
         return 1

@@ -115,6 +115,7 @@ if [[ $# -gt 0 ]]; then
         --auto-install)
             DISTRO="${2:-debian}"
             echo "Auto-installing $DISTRO..."
+            ensure_proot_distro || exit 1
             proot-distro install "$DISTRO"
             exit 0
             ;;
@@ -281,13 +282,7 @@ main_menu() {
 install_linux() {
     draw_header "Linux Installation"
     
-    echo -e "${BLUE}Updating Termux packages...${RESET}"
-    apt update && apt upgrade -y
-
-    if ! command -v proot-distro &> /dev/null; then
-        echo -e "${BLUE}Installing proot-distro...${RESET}"
-        apt install -y proot-distro
-    fi
+    ensure_proot_distro || return 1
 
     draw_card "Available Distributions" \
         "Run 'proot-distro list' for full list" \
