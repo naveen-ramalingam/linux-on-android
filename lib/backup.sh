@@ -98,20 +98,21 @@ restore_distro() {
 }
 
 list_backups() {
-    echo -e "${CYAN}Available backups:${RESET}"
+    draw_header "Available Backups"
     local backups=("$BACKUP_BASE_DIR"/*/)
     if [[ ! -e "${backups[0]}" ]]; then
-        echo -e "${YELLOW}No backups found.${RESET}"
+        draw_card "No Backups" "No saved distro backups found in $BACKUP_BASE_DIR"
         return
     fi
     
     for backup in "${backups[@]}"; do
         local name=$(basename "$backup")
         if [[ -f "$backup/manifest.txt" ]]; then
-            echo -e "${YELLOW}$name${RESET}"
-            cat "$backup/manifest.txt" | sed 's/^/  /'
+            local manifest_content
+            manifest_content=$(head -n 4 "$backup/manifest.txt")
+            draw_card "Backup: $name" "$manifest_content"
         else
-            echo -e "${YELLOW}$name${RESET} (no manifest)"
+            draw_card "Backup: $name" "(No manifest found)"
         fi
         echo ""
     done

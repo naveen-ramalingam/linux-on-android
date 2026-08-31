@@ -2,8 +2,15 @@
 # System diagnostics and problem resolution
 
 run_diagnostics() {
-    echo "Running system diagnostics..."
-    echo "1. Checking proot-distro installation: $(command -v proot-distro || echo 'Not Found')"
-    echo "2. Checking storage: $(get_storage_free)"
-    echo "3. Termux environment: $IS_TERMUX"
+    draw_header "System Diagnostics"
+    draw_card "Running comprehensive checks..." \
+        "" \
+        "${CYAN}1)${RESET} proot-distro: $(command -v proot-distro || echo '${RED}Not Found${RESET}')" \
+        "${CYAN}2)${RESET} Storage: $(get_storage_free)" \
+        "${CYAN}3)${RESET} Termux: $IS_TERMUX" \
+        "${CYAN}4)${RESET} CPU: $(get_cpu_arch)" \
+        "${CYAN}5)${RESET} RAM: $(get_ram_free 2>/dev/null || echo 'N/A')"
+    echo -e "\n${GREEN}✓ Diagnostics complete${RESET}"
+    echo ""
+    read -rp "${YELLOW}Press Enter to continue...${RESET}" _
 }

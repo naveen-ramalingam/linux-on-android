@@ -200,17 +200,85 @@ recommend_services() {
 
 # Show comprehensive recommendations
 show_all_recommendations() {
+    local device_class=$(classify_device)
+    local ram=$(get_system_ram)
+    local storage=$(get_available_storage)
+    local cores=$(get_cpu_cores)
+    local arch=$(get_cpu_arch)
+    
+    draw_header "Hardware Recommendations"
+    
+    draw_card "System Analysis" \
+        "${CYAN}Architecture:${RESET} $arch" \
+        "${CYAN}CPU Cores:${RESET} $cores" \
+        "${CYAN}RAM:${RESET} ${ram}MB" \
+        "${CYAN}Storage:${RESET} ${storage}GB" \
+        "${CYAN}Class:${RESET} ${GREEN}$(echo $device_class | tr '[:lower:]' '[:upper:]')${RESET}"
     echo ""
-    echo "╔════════════════════════════════════════════╗"
-    echo "║     Hardware-Based Recommendations         ║"
-    echo "╚════════════════════════════════════════════╝"
     
-    recommend_distro
-    recommend_desktop
-    recommend_services
+    case "$device_class" in
+        minimal)
+            draw_card "Distro: Alpine Linux (Recommended)" \
+                "• Extremely lightweight (~5MB base)" \
+                "• Perfect for limited resources" \
+                "• Uses musl libc for smaller footprint"
+            echo ""
+            draw_card "Desktop: Headless (Recommended)" \
+                "• Conserve all resources for services" \
+                "• Use SSH for remote access"
+            echo ""
+            draw_card "Services: SSH Only" \
+                "• SSH for remote management" \
+                "• Avoid VNC to conserve memory"
+            ;;
+        light)
+            draw_card "Distro: Debian (Recommended)" \
+                "• Balanced performance and compatibility" \
+                "• Excellent package availability" \
+                "• Stable and well-documented"
+            echo ""
+            draw_card "Desktop: LXDE (Recommended)" \
+                "• Lightweight and responsive" \
+                "• Low memory footprint" \
+                "• Classic desktop experience"
+            echo ""
+            draw_card "Services: SSH + VNC (if needed)" \
+                "• SSH for essential remote access" \
+                "• VNC possible but monitor performance"
+            ;;
+        medium)
+            draw_card "Distro: Ubuntu (Recommended)" \
+                "• Good balance of features and performance" \
+                "• Wide community support" \
+                "• Regular updates"
+            echo ""
+            draw_card "Desktop: XFCE (Recommended)" \
+                "• Good balance of features and performance" \
+                "• Modern look and feel" \
+                "• Highly customizable"
+            echo ""
+            draw_card "Services: SSH + VNC" \
+                "• Both services available" \
+                "• Your device handles multiple services well"
+            ;;
+        powerful)
+            draw_card "Distro: Ubuntu / Fedora (Recommended)" \
+                "• Full-featured desktop experience" \
+                "• Modern software stack" \
+                "• Good for development work"
+            echo ""
+            draw_card "Desktop: GNOME or XFCE (Recommended)" \
+                "• GNOME: Full modern desktop experience" \
+                "• XFCE: Traditional with customization"
+            echo ""
+            draw_card "Services: All Available" \
+                "• SSH, VNC, and custom services" \
+                "• Your device handles everything"
+            ;;
+    esac
     
-    echo "Press Enter to return to menu..."
-    read -r
+    echo ""
+    read -rp "${YELLOW}Press Enter to continue...${RESET}" _
 }
 
 # Quick hardware summary

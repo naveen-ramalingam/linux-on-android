@@ -93,61 +93,67 @@ view_logs() {
     local lines=50
     
     while true; do
+        draw_header "Log Viewer"
+        draw_card "Log Management" \
+            "${YELLOW} 1)${RESET} View recent logs (last $lines lines)" \
+            "${YELLOW} 2)${RESET} Filter by level (DEBUG/INFO/WARN/ERROR)" \
+            "${YELLOW} 3)${RESET} Search logs" \
+            "${YELLOW} 4)${RESET} Export logs" \
+            "${YELLOW} 5)${RESET} Clear logs" \
+            "${YELLOW} 6)${RESET} Back"
         echo ""
-        echo "=== Log Viewer ==="
-        echo ""
-        echo "1) View recent logs (last $lines lines)"
-        echo "2) Filter by level"
-        echo "3) Search logs"
-        echo "4) Export logs"
-        echo "5) Clear logs"
-        echo "6) Back"
-        echo ""
-        read -rp "Select option: " choice
+        menu_prompt
+        read -r choice
         
         case "$choice" in
             1)
                 echo ""
-                echo "--- Last $lines lines ---"
-                tail -n "$lines" "$LOG_FILE" 2>/dev/null || echo "No logs available"
+                draw_card "Recent Logs (last $lines lines)" \
+                    "$(tail -n "$lines" "$LOG_FILE" 2>/dev/null || echo 'No logs available')"
                 echo ""
-                read -rp "Press Enter to continue..."
+                read -rp "${YELLOW}Press Enter to continue...${RESET}" _
                 ;;
             2)
                 echo ""
-                echo "Filter by: (DEBUG/INFO/WARN/ERROR/FATAL)"
-                read -rp "Enter level: " level
+                echo -ne "${CYAN}Filter by level (DEBUG/INFO/WARN/ERROR/FATAL):${RESET} "
+                read -r level
                 echo ""
-                grep "\[${level}\]" "$LOG_FILE" 2>/dev/null | tail -n "$lines" || echo "No matching logs"
+                draw_card "Logs matching [$level]" \
+                    "$(grep "\[${level}\]" "$LOG_FILE" 2>/dev/null | tail -n "$lines" || echo 'No matching logs')"
                 echo ""
-                read -rp "Press Enter to continue..."
+                read -rp "${YELLOW}Press Enter to continue...${RESET}" _
                 ;;
             3)
-                read -rp "Enter search term: " term
+                echo -ne "${CYAN}Enter search term:${RESET} "
+                read -r term
                 echo ""
-                grep -i "$term" "$LOG_FILE" 2>/dev/null | tail -n "$lines" || echo "No matching logs"
+                draw_card "Search results for '$term'" \
+                    "$(grep -i "$term" "$LOG_FILE" 2>/dev/null | tail -n "$lines" || echo 'No matching logs')"
                 echo ""
-                read -rp "Press Enter to continue..."
+                read -rp "${YELLOW}Press Enter to continue...${RESET}" _
                 ;;
             4)
                 local export_file="${HOME}/linux-on-android-logs-$(date +%Y%m%d-%H%M%S).txt"
                 cp "$LOG_FILE" "$export_file" 2>/dev/null
-                echo "${GREEN}✓ Logs exported to: $export_file${RESET}"
+                echo "\n${GREEN}✓ Logs exported to: $export_file${RESET}"
                 ;;
             5)
-                read -rp "Clear all logs? (y/N): " confirm
+                echo -ne "${YELLOW}Clear all logs? (y/N):${RESET} "
+                read -r confirm
                 if [[ "$confirm" =~ ^[Yy]$ ]]; then
                     > "$LOG_FILE"
-                    echo "${GREEN}✓ Logs cleared${RESET}"
+                    echo "\n${GREEN}✓ Logs cleared${RESET}"
                 fi
                 ;;
             6)
                 break
                 ;;
             *)
-                echo "${RED}Invalid option${RESET}"
+                echo -e "${RED}Invalid option${RESET}"
                 ;;
         esac
+        echo ""
+        read -rp "${YELLOW}Press Enter to continue...${RESET}" _
     done
 }
 

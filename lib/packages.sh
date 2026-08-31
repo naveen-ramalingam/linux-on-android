@@ -11,9 +11,11 @@ STACKS[MEDIA]="ffmpeg imagemagick vlc-bin"
 STACKS[DATA]="postgresql postgresql-contrib redis-server sqlite3"
 
 list_available_stacks() {
-    echo -e "${CYAN}Available software stacks:${RESET}"
+    draw_header "Software Stacks"
     for stack in "${!STACKS[@]}"; do
-        echo -e "${YELLOW}$stack:${RESET} ${STACKS[$stack]}"
+        draw_card "$stack Stack" \
+            "${CYAN}Packages:${RESET} ${STACKS[$stack]}"
+        echo ""
     done
 }
 

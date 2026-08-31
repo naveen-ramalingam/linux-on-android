@@ -142,18 +142,19 @@ main_menu() {
         CURRENT_DISTRO=$(get_installed_distro)
         draw_status_bar "$CURRENT_DISTRO"
         
-        echo -e "${YELLOW} 1)${RESET} First-Run / Setup Wizard"
-        echo -e "${YELLOW} 2)${RESET} Install Linux Distribution"
-        echo -e "${YELLOW} 3)${RESET} Launch / Login to Linux"
-        echo -e "${YELLOW} 4)${RESET} Service Management (SSH/VNC)"
-        echo -e "${YELLOW} 5)${RESET} Hardware Recommendations"
-        echo -e "${YELLOW} 6)${RESET} Package Stacks & Software"
-        echo -e "${YELLOW} 7)${RESET} Backup & Restore Snapshots"
-        echo -e "${YELLOW} 8)${RESET} View Logs & Telemetry"
-        echo -e "${YELLOW} 9)${RESET} System Diagnostics & Doctor"
-        echo -e "${YELLOW}10)${RESET} Uninstall Distribution"
-        echo -e "${YELLOW}11)${RESET} Uninstall ALL Distributions"
-        echo -e "${YELLOW}12)${RESET} Exit"
+        draw_card "Control Center" \
+            "${YELLOW} 1)${RESET} First-Run / Setup Wizard" \
+            "${YELLOW} 2)${RESET} Install Linux Distribution" \
+            "${YELLOW} 3)${RESET} Launch / Login to Linux" \
+            "${YELLOW} 4)${RESET} Service Management (SSH/VNC)" \
+            "${YELLOW} 5)${RESET} Hardware Recommendations" \
+            "${YELLOW} 6)${RESET} Package Stacks & Software" \
+            "${YELLOW} 7)${RESET} Backup & Restore Snapshots" \
+            "${YELLOW} 8)${RESET} View Logs & Telemetry" \
+            "${YELLOW} 9)${RESET} System Diagnostics & Doctor" \
+            "${YELLOW}10)${RESET} Uninstall Distribution" \
+            "${YELLOW}11)${RESET} Uninstall ALL Distributions" \
+            "${YELLOW}12)${RESET} Exit"
         
         echo ""
         menu_prompt
@@ -198,6 +199,8 @@ main_menu() {
 }
 
 install_linux() {
+    draw_header "Linux Installation"
+    
     echo -e "${BLUE}Updating Termux packages...${RESET}"
     apt update && apt upgrade -y
 
@@ -206,33 +209,38 @@ install_linux() {
         apt install -y proot-distro
     fi
 
-    echo -e "${CYAN}Available distros:${RESET}"
-    proot-distro list
+    draw_card "Available Distributions" \
+        "Run 'proot-distro list' for full list" \
+        "Popular: debian, ubuntu, alpine, fedora, arch"
+    echo ""
+    proot-distro list | head -20
+    echo ""
 
-    read -rp "Enter distro to install (default: debian): " DISTRO
+    read -rp "${CYAN}Enter distro to install [debian]:${RESET} " DISTRO
     DISTRO="${DISTRO:-debian}"
 
-    read -rp "Enter username to create (default: user): " USERNAME
+    read -rp "${CYAN}Enter username to create [user]:${RESET} " USERNAME
     USERNAME="${USERNAME:-user}"
 
-    read -rp "Install LXDE desktop? (y/N): " INSTALL_GUI
+    read -rp "${CYAN}Install LXDE desktop? [y/N]:${RESET} " INSTALL_GUI
     INSTALL_GUI="${INSTALL_GUI:-N}"
 
-    read -rp "VNC resolution (default 1920x1080): " RES
+    read -rp "${CYAN}VNC resolution [1920x1080]:${RESET} " RES
     RES="${RES:-1920x1080}"
 
-    read -rp "Enter VNC password (default: 1234): " VNC_PASSWD
+    read -rp "${CYAN}Enter VNC password [1234]:${RESET} " VNC_PASSWD
     VNC_PASSWD="${VNC_PASSWD:-1234}"
 
     echo ""
-    echo -e "${CYAN}${BOLD}=== Confirm Your Configuration ===${RESET}"
-    echo -e "${YELLOW}Distro:        ${RESET}$DISTRO"
-    echo -e "${YELLOW}Username:      ${RESET}$USERNAME"
-    echo -e "${YELLOW}Install GUI:   ${RESET}$INSTALL_GUI"
-    echo -e "${YELLOW}Resolution:    ${RESET}$RES"
-    echo -e "${YELLOW}VNC Password:  ${RESET}$VNC_PASSWD"
+    draw_card "Configuration Summary" \
+        "${YELLOW}Distro:${RESET}        $DISTRO" \
+        "${YELLOW}Username:${RESET}      $USERNAME" \
+        "${YELLOW}Install GUI:${RESET}   $INSTALL_GUI" \
+        "${YELLOW}Resolution:${RESET}    $RES" \
+        "${YELLOW}VNC Password:${RESET}  $VNC_PASSWD"
     echo ""
-    read -rp "Proceed with installation? (y/N): " CONFIRM
+    
+    read -rp "${GREEN}Proceed with installation? [y/N]:${RESET} " CONFIRM
     if [[ ! "$CONFIRM" =~ ^[yY]$ ]]; then
         echo -e "${RED}Installation cancelled.${RESET}"
         return 0
@@ -297,12 +305,13 @@ RESOLUTION=$RES
 VNC_PASSWD=$VNC_PASSWD
 EOF
 
-    echo -e "${GREEN}${BOLD}=== Installation complete! ===${RESET}"
-    echo -e "${CYAN}Login with:${RESET}      proot-distro login $DISTRO --"
-    echo -e "${CYAN}Switch user:${RESET}     su - $USERNAME"
-    [[ "$INSTALL_GUI" =~ ^[yY]$ ]] && echo -e "${CYAN}Start VNC:${RESET}       vncserver -geometry $RES :1"
-    echo -e "${CYAN}Stop VNC:${RESET}        vncserver -kill :1"
-    echo -e "${CYAN}VNC password:${RESET}    $VNC_PASSWD"
+    echo ""
+    draw_card "Installation Complete!" \
+        "${CYAN}Login:${RESET}        proot-distro login $DISTRO --" \
+        "${CYAN}Switch User:${RESET}  su - $USERNAME" \
+        "${CYAN}Start VNC:${RESET}    linux-on-android --start-vnc" \
+        "${CYAN}Stop VNC:${RESET}     linux-on-android --stop-vnc" \
+        "${CYAN}VNC Pass:${RESET}     $VNC_PASSWD"
 }
 
 uninstall_one() {

@@ -196,13 +196,11 @@ show_service_status() {
 
 # Show all services status
 show_all_services_status() {
-    echo ""
-    echo "=== Service Status ==="
-    echo ""
+    local status_lines=()
     for service in "${!SERVICES[@]}"; do
-        show_service_status "$service"
+        status_lines+=("$(show_service_status "$service")")
     done
-    echo ""
+    draw_card "Service Status" "${status_lines[@]}"
 }
 
 # Clean stale lock files
@@ -227,30 +225,33 @@ clean_stale_locks() {
 # Service management menu
 service_menu() {
     while true; do
-        echo ""
-        echo "=== Service Management ==="
-        echo ""
+        draw_header "Service Management"
         show_all_services_status
         echo ""
-        echo "1) Start Service"
-        echo "2) Stop Service"
-        echo "3) Restart Service"
-        echo "4) Clean Stale Locks"
-        echo "5) Back to Main Menu"
+        draw_card "Quick Actions" \
+            "${YELLOW} 1)${RESET} Start Service" \
+            "${YELLOW} 2)${RESET} Stop Service" \
+            "${YELLOW} 3)${RESET} Restart Service" \
+            "${YELLOW} 4)${RESET} Clean Stale Locks" \
+            "${YELLOW} 5)${RESET} Back to Main Menu"
         echo ""
-        read -rp "Select option: " choice
+        menu_prompt
+        read -r choice
         
         case "$choice" in
             1)
-                read -rp "Enter service name (ssh/vnc/desktop): " svc
+                echo -ne "${CYAN}Enter service (ssh/vnc/desktop):${RESET} "
+                read -r svc
                 start_service "$svc"
                 ;;
             2)
-                read -rp "Enter service name (ssh/vnc/desktop): " svc
+                echo -ne "${CYAN}Enter service (ssh/vnc/desktop):${RESET} "
+                read -r svc
                 stop_service "$svc"
                 ;;
             3)
-                read -rp "Enter service name (ssh/vnc/desktop): " svc
+                echo -ne "${CYAN}Enter service (ssh/vnc/desktop):${RESET} "
+                read -r svc
                 restart_service "$svc"
                 ;;
             4)
@@ -260,8 +261,10 @@ service_menu() {
                 break
                 ;;
             *)
-                echo "${RED}Invalid option${RESET}"
+                echo -e "${RED}Invalid option${RESET}"
                 ;;
         esac
+        echo ""
+        read -rp "Press Enter to continue..." _
     done
 }
