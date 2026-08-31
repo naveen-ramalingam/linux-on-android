@@ -82,7 +82,7 @@ Check out the **[Manual Installation Guide](docs/MANUAL-INSTALL.md)**.
 3. Clone the repository:
 
    ```bash
-   git clone https://github.com/uzairmukadam/linux-on-android.git
+   git clone https://github.com/naveen-ramalingam/linux-on-android.git
    cd linux-on-android
    ```
 

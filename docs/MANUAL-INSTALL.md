@@ -45,7 +45,7 @@ apt install git -y
 Clone the repository if you want to reference the automation script (optional):
 
 ```bash
-git clone https://github.com/uzairmukadam/linux-on-android.git
+git clone https://github.com/naveen-ramalingam/linux-on-android.git
 ```
 
 ---
