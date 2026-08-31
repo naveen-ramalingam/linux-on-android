@@ -8,11 +8,11 @@ list_distros() {
 }
 
 is_distro_installed() {
-    [[ -n "$1" ]] && proot-distro list 2>/dev/null | grep -q "^$1 "
+    [[ -n "$1" ]] && proot-distro list 2>/dev/null | grep -E "^[[:space:]]*$1:?[[:space:]]+.*installed" >/dev/null 2>&1
 }
 
 get_installed_distro() {
-    proot-distro list 2>/dev/null | grep "installed" | awk '{print $2}' | tr -d ':' | head -n 1
+    proot-distro list 2>/dev/null | grep -E "installed" | grep -v "not installed" | awk -F'[: ]+' '{print $1}' | head -n 1
 }
 
 install_distro() {

@@ -74,3 +74,41 @@ cleanup_distro_packages() {
     "
     echo -e "${GREEN}Cleanup complete.${RESET}"
 }
+
+package_menu() {
+    local distro="$1"
+    while true; do
+        draw_header "Package Management ($distro)"
+        draw_card "Software Options" \
+            "${YELLOW} 1)${RESET} View Available Stacks" \
+            "${YELLOW} 2)${RESET} Install LAMP Stack (Apache/MariaDB/PHP)" \
+            "${YELLOW} 3)${RESET} Install LEMP Stack (Nginx/MariaDB/PHP)" \
+            "${YELLOW} 4)${RESET} Install DEV Stack (Build tools/Git/Node/Python)" \
+            "${YELLOW} 5)${RESET} Install Custom Packages" \
+            "${YELLOW} 6)${RESET} Update & Upgrade Packages" \
+            "${YELLOW} 7)${RESET} Cleanup Unused Packages" \
+            "${YELLOW} 8)${RESET} Back to Main Menu"
+        echo ""
+        menu_prompt
+        read -r choice
+
+        case "$choice" in
+            1) list_available_stacks ;;
+            2) install_stack "$distro" "LAMP" ;;
+            3) install_stack "$distro" "LEMP" ;;
+            4) install_stack "$distro" "DEV" ;;
+            5)
+                echo -ne "${CYAN}Enter packages separated by space:${RESET} "
+                read -r pkgs
+                [[ -n "$pkgs" ]] && install_custom_packages "$distro" $pkgs
+                ;;
+            6) update_distro_packages "$distro" ;;
+            7) cleanup_distro_packages "$distro" ;;
+            8) break ;;
+            *) echo -e "${RED}Invalid choice.${RESET}" ;;
+        esac
+        echo ""
+        read -rp "${YELLOW}Press Enter to continue...${RESET}" _
+    done
+}
+

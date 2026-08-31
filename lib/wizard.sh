@@ -126,7 +126,7 @@ first_run_wizard() {
         
         # Launch installation
         echo -e "${BLUE}Starting installation of ${BOLD}$distro${RESET}${BLUE}...${RESET}"
-        . "/Users/naveenramalingam/Downloads/Linux-on-Android-main/linux-on-android.sh" --auto-install "$distro"
+        "${BASE_DIR}/linux-on-android.sh" --auto-install "$distro"
         
         draw_card "Success" "Setup complete! Your Linux environment is ready."
         echo -e "${CYAN}Check status with:${RESET} ./linux-on-android.sh --status"

@@ -6,6 +6,7 @@ set -e
 
 # Determine the base directory of this script
 BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export BASE_DIR
 export LIB_PATH="$BASE_DIR/lib"
 
 # Source modular libraries

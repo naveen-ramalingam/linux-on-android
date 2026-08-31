@@ -136,3 +136,39 @@ delete_backup() {
     rm -rf "$backup_dir"
     echo -e "${GREEN}Backup deleted.${RESET}"
 }
+
+backup_menu() {
+    local distro="$1"
+    while true; do
+        draw_header "Backup & Restore ($distro)"
+        draw_card "Snapshot Manager" \
+            "${YELLOW} 1)${RESET} Create Full Backup" \
+            "${YELLOW} 2)${RESET} List Available Backups" \
+            "${YELLOW} 3)${RESET} Restore from Backup" \
+            "${YELLOW} 4)${RESET} Delete a Backup" \
+            "${YELLOW} 5)${RESET} Back to Main Menu"
+        echo ""
+        menu_prompt
+        read -r choice
+
+        case "$choice" in
+            1) backup_distro "$distro" ;;
+            2) list_backups ;;
+            3)
+                echo -ne "${CYAN}Enter backup name to restore:${RESET} "
+                read -r bname
+                [[ -n "$bname" ]] && restore_distro "$bname"
+                ;;
+            4)
+                echo -ne "${CYAN}Enter backup name to delete:${RESET} "
+                read -r bname
+                [[ -n "$bname" ]] && delete_backup "$bname"
+                ;;
+            5) break ;;
+            *) echo -e "${RED}Invalid choice.${RESET}" ;;
+        esac
+        echo ""
+        read -rp "${YELLOW}Press Enter to continue...${RESET}" _
+    done
+}
+
