@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Linux Server Manager for Android (proot-distro manager)
-# Mobile-optimized, modular management tool for Termux
+# Mobile-optimized, modular management tool and control center for Termux
 
 set -e
 
@@ -27,12 +27,114 @@ source "$LIB_PATH/vnc.sh"
 source "$LIB_PATH/ui.sh"
 # shellcheck source=/dev/null
 source "$LIB_PATH/diagnostics.sh"
+# shellcheck source=/dev/null
+source "$LIB_PATH/config.sh"
+# shellcheck source=/dev/null
+source "$LIB_PATH/services.sh"
+# shellcheck source=/dev/null
+source "$LIB_PATH/logs.sh"
+# shellcheck source=/dev/null
+source "$LIB_PATH/wizard.sh"
+# shellcheck source=/dev/null
+source "$LIB_PATH/recommendations.sh"
+# shellcheck source=/dev/null
+source "$LIB_PATH/packages.sh"
+# shellcheck source=/dev/null
+source "$LIB_PATH/backup.sh"
 
 PREFIX="${PREFIX:-/data/data/com.termux/files/usr}"
 CONFIG_DIR="$PREFIX/etc/linux-on-android"
 mkdir -p "$CONFIG_DIR"
 
 detect_environment
+load_config
+
+print_usage() {
+    echo "Usage: ./linux-on-android.sh [OPTIONS]"
+    echo ""
+    echo "Options:"
+    echo "  --status               Show overall system and container status"
+    echo "  --auto-install [dist]  Non-interactively install a distribution (e.g. debian)"
+    echo "  --wizard               Launch interactive First-Run / Distro Setup Wizard"
+    echo "  --recommend            Show hardware-tailored recommendations"
+    echo "  --services             Manage background services (SSH, VNC, etc.)"
+    echo "  --logs                 Open unified log viewer"
+    echo "  --doctor               Run comprehensive system diagnostics"
+    echo "  --start-vnc            Start VNC server for installed distribution"
+    echo "  --stop-vnc             Stop VNC server for installed distribution"
+    echo "  --start-ssh            Start SSH server for installed distribution"
+    echo "  --stop-ssh             Stop SSH server for installed distribution"
+    echo "  --help, -h             Show this help message"
+}
+
+# CLI routing
+if [[ $# -gt 0 ]]; then
+    case "$1" in
+        --status)
+            draw_header "Status Overview"
+            CURRENT_DISTRO=$(get_installed_distro)
+            draw_status_bar "$CURRENT_DISTRO"
+            show_all_services_status
+            hardware_summary
+            exit 0
+            ;;
+        --auto-install)
+            DISTRO="${2:-debian}"
+            echo "Auto-installing $DISTRO..."
+            proot-distro install "$DISTRO"
+            exit 0
+            ;;
+        --wizard)
+            wizard_menu
+            exit 0
+            ;;
+        --recommend)
+            show_all_recommendations
+            exit 0
+            ;;
+        --services)
+            service_menu
+            exit 0
+            ;;
+        --logs)
+            view_logs
+            exit 0
+            ;;
+        --doctor)
+            run_diagnostics
+            exit 0
+            ;;
+        --start-vnc)
+            CURRENT_DISTRO=$(get_installed_distro)
+            [[ -n "$CURRENT_DISTRO" ]] && start_vnc "$CURRENT_DISTRO"
+            exit 0
+            ;;
+        --stop-vnc)
+            CURRENT_DISTRO=$(get_installed_distro)
+            [[ -n "$CURRENT_DISTRO" ]] && stop_vnc "$CURRENT_DISTRO"
+            exit 0
+            ;;
+        --start-ssh)
+            CURRENT_DISTRO=$(get_installed_distro)
+            [[ -n "$CURRENT_DISTRO" ]] && start_ssh "$CURRENT_DISTRO"
+            exit 0
+            ;;
+        --stop-ssh)
+            CURRENT_DISTRO=$(get_installed_distro)
+            [[ -n "$CURRENT_DISTRO" ]] && stop_ssh "$CURRENT_DISTRO"
+            exit 0
+            ;;
+        --help|-h)
+            print_usage
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            print_usage
+            exit 1
+            ;;
+    esac
+fi
 
 main_menu() {
     while true; do
@@ -40,59 +142,54 @@ main_menu() {
         CURRENT_DISTRO=$(get_installed_distro)
         draw_status_bar "$CURRENT_DISTRO"
         
-        echo -e "${YELLOW}1)${RESET} Install Linux Distribution"
-        echo -e "${YELLOW}2)${RESET} Uninstall a Distribution"
-        echo -e "${YELLOW}3)${RESET} Uninstall ALL Distributions"
-        echo -e "${YELLOW}4)${RESET} Launch / Login to Linux"
-        echo -e "${YELLOW}5)${RESET} Manage Desktop / VNC"
-        echo -e "${YELLOW}6)${RESET} Manage SSH Server"
-        echo -e "${YELLOW}7)${RESET} System Diagnostics"
-        echo -e "${YELLOW}8)${RESET} Exit"
+        echo -e "${YELLOW} 1)${RESET} First-Run / Setup Wizard"
+        echo -e "${YELLOW} 2)${RESET} Install Linux Distribution"
+        echo -e "${YELLOW} 3)${RESET} Launch / Login to Linux"
+        echo -e "${YELLOW} 4)${RESET} Service Management (SSH/VNC)"
+        echo -e "${YELLOW} 5)${RESET} Hardware Recommendations"
+        echo -e "${YELLOW} 6)${RESET} Package Stacks & Software"
+        echo -e "${YELLOW} 7)${RESET} Backup & Restore Snapshots"
+        echo -e "${YELLOW} 8)${RESET} View Logs & Telemetry"
+        echo -e "${YELLOW} 9)${RESET} System Diagnostics & Doctor"
+        echo -e "${YELLOW}10)${RESET} Uninstall Distribution"
+        echo -e "${YELLOW}11)${RESET} Uninstall ALL Distributions"
+        echo -e "${YELLOW}12)${RESET} Exit"
+        
         echo ""
         menu_prompt
         read -r CHOICE
 
         case "$CHOICE" in
-            1) install_linux ;;
-            2) uninstall_one ;;
-            3) uninstall_all ;;
-            4) 
+            1) wizard_menu ;;
+            2) install_linux ;;
+            3) 
                 if [[ -n "$CURRENT_DISTRO" ]]; then
                     login_distro "$CURRENT_DISTRO"
                 else
                     echo -e "${RED}No distribution currently installed.${RESET}"
                 fi
                 ;;
-            5)
+            4) service_menu ;;
+            5) show_all_recommendations ;;
+            6) 
                 if [[ -n "$CURRENT_DISTRO" ]]; then
-                    echo "1) Start VNC"
-                    echo "2) Stop VNC"
-                    echo "3) Restart VNC"
-                    read -rp "Choice: " VNC_OPT
-                    case "$VNC_OPT" in
-                        1) start_vnc "$CURRENT_DISTRO" ;;
-                        2) stop_vnc "$CURRENT_DISTRO" ;;
-                        3) restart_vnc "$CURRENT_DISTRO" ;;
-                    esac
+                    package_menu "$CURRENT_DISTRO"
                 else
                     echo -e "${RED}No distribution installed.${RESET}"
                 fi
                 ;;
-            6)
+            7)
                 if [[ -n "$CURRENT_DISTRO" ]]; then
-                    echo "1) Start SSH"
-                    echo "2) Stop SSH"
-                    read -rp "Choice: " SSH_OPT
-                    case "$SSH_OPT" in
-                        1) start_ssh "$CURRENT_DISTRO" ;;
-                        2) stop_ssh "$CURRENT_DISTRO" ;;
-                    esac
+                    backup_menu "$CURRENT_DISTRO"
                 else
                     echo -e "${RED}No distribution installed.${RESET}"
                 fi
                 ;;
-            7) run_diagnostics ;;
-            8) echo -e "${GREEN}Goodbye!${RESET}"; exit 0 ;;
+            8) view_logs ;;
+            9) run_diagnostics ;;
+            10) uninstall_one ;;
+            11) uninstall_all ;;
+            12) echo -e "${GREEN}Goodbye!${RESET}"; exit 0 ;;
             *) echo -e "${RED}Invalid choice.${RESET}" ;;
         esac
         echo ""

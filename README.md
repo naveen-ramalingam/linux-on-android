@@ -104,19 +104,24 @@ Check out the **[Manual Installation Guide](docs/MANUAL-INSTALL.md)**.
 
 ```
 Linux-on-Android/
-├── linux-on-android.sh    # Main interactive entry point
-├── lib/                   # Modular libraries
-│   ├── colors.sh          # Terminal styling and color detection
-│   ├── system.sh          # System info (CPU, RAM, battery, storage)
-│   ├── network.sh         # Network interfaces and IP detection
-│   ├── distro.sh          # proot-distro management
-│   ├── users.sh           # User and sudo provisioning
-│   ├── ssh.sh             # OpenSSH server manager
-│   ├── vnc.sh             # LXDE / TightVNC manager
-│   ├── ui.sh              # Mobile-first headers and status bars
-│   ├── diagnostics.sh     # Health check and environment audit
-│   ├── backup.sh          # Rootfs backup and restore
-│   └── packages.sh        # Quick package stack installers
+├── linux-on-android.sh    # Main interactive entry point & CLI router
+├── lib/                   # Modular libraries (16 modules)
+│   ├── colors.sh          # Terminal styling, color detection & themes
+│   ├── config.sh          # Centralized configuration (~/.linux-on-android.conf)
+│   ├── system.sh          # System detection (CPU, RAM, battery, storage)
+│   ├── network.sh         # Network interfaces, LAN detection & port scanner
+│   ├── distro.sh          # proot-distro lifecycle management & profiles
+│   ├── users.sh           # Non-root user creation & sudo provisioning
+│   ├── ssh.sh             # OpenSSH server manager & key setup
+│   ├── vnc.sh             # LXDE / XFCE / TightVNC display manager
+│   ├── services.sh        # Service supervisor (PID/Port tracking without systemd)
+│   ├── recommendations.sh # Hardware-based distro & desktop recommendations
+│   ├── wizard.sh          # 6-step interactive first-run & custom install wizards
+│   ├── logs.sh            # Structured logging engine, log rotation & viewer
+│   ├── ui.sh              # Responsive TUI (cards, progress bars, spinners)
+│   ├── diagnostics.sh     # System doctor & environment audit
+│   ├── backup.sh          # Compressed rootfs backup & restore
+│   └── packages.sh        # Curated stack installers (Web, Python, Docker/Podman)
 ├── docs/
 │   └── MANUAL-INSTALL.md  # Step-by-step manual setup guide
 └── LICENSE                # MIT License
@@ -124,33 +129,62 @@ Linux-on-Android/
 
 ---
 
+## ⚡ CLI Arguments & Automation
+
+In addition to the interactive TUI menu, `linux-on-android.sh` can be executed directly with CLI flags for automation and quick checks:
+
+| Flag | Description |
+|---|---|
+| `--status` | Show active system & distro status overview |
+| `--auto-install` | Auto-detect hardware specs and run recommended installation |
+| `--wizard` | Launch the guided 6-step setup wizard |
+| `--recommend` | Inspect device hardware and show distro/desktop sizing recommendations |
+| `--services` | Open the unified service supervisor (SSH, VNC, Desktop) |
+| `--logs` | Open the structured log viewer & statistics |
+| `--doctor` | Run comprehensive system diagnostics and environment health check |
+| `--start-vnc [distro]` | Start VNC server for the default or specified distro |
+| `--stop-vnc [distro]` | Stop running VNC server and clean stale locks |
+| `--start-ssh [distro]` | Start OpenSSH daemon in distro userspace |
+| `--stop-ssh [distro]` | Stop running OpenSSH server |
+| `--help` / `-h` | Display command-line usage reference |
+
+---
+
 ## 🧩 What the Script Does
 
-### 1. Installs your chosen Linux distro  
-Supports any distro available through `proot-distro`.
+### 1. Hardware-Aware Recommendations
+Analyzes available RAM, CPU architecture, and free disk space to classify devices into **Low**, **Mid**, or **High** spec tiers, offering tailored distro recommendations (e.g. Alpine for low-spec, Ubuntu/Debian for high-spec).
 
-### 2. Creates a non‑root user  
-Passwordless login, safe sudo access.
+### 2. Guided 6-Step Setup Wizard
+Interactive walkthrough to choose:
+1. Target Distribution
+2. Non-root Username & Secure Password
+3. Desktop Environment (LXDE, XFCE, or Headless Server)
+4. Remote Access Services (SSH, VNC)
+5. Custom Port Configuration
+6. Pre-installed Development Stacks
 
-### 3. Optional LXDE desktop setup  
-If selected, the script installs:
+### 3. Service Supervision (Without systemd)
+Because PRoot runs rootless in Android userspace without `systemd` or `init`, traditional service managers fail. Our `lib/services.sh` provides direct PID tracking, port monitoring, automated lockfile cleanup (`/tmp/.X1-lock`), and clean background process lifecycle management.
 
-- LXDE  
-- TightVNCServer  
-- A working `xstartup`  
-- A VNC password  
-- Automatic lock‑file cleanup  
-- A test VNC session to initialize configs  
+### 4. Structured Logging & Auditing
+All installation steps, service transitions, errors, and diagnostics are recorded with timestamps to `~/.linux-on-android.log` with automatic log rotation and an interactive log viewer.
 
-### 4. Saves configuration  
-Each installed distro gets a config file in:
+### 5. Installs your chosen Linux distro
+Supports Debian, Ubuntu, Alpine, Arch, Fedora, and Void through `proot-distro`.
+
+### 6. Creates a non‑root user
+Passwordless or secure authenticated login with safe sudo access.
+
+### 7. Saves configuration & Profiles
+Stores global settings in `~/.linux-on-android.conf` and per-distro profiles in:
 
 ```
 $PREFIX/etc/linux-on-android/<distro>.conf
 ```
 
-### 5. Provides clean uninstall options  
-Remove one distro or all of them.
+### 8. Provides clean uninstall options
+Remove one distro or all of them with full cleanup.
 
 ---
 
